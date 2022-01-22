@@ -35,15 +35,14 @@ def main():
         allowed_guesses.sort()
     with open("wordle-answers-alphabetical.txt") as f:
         answers_alphabetical = f.read().split()
-        answers_alphabetical = random.sample(answers_alphabetical, 500)
         answers_alphabetical.sort()
 
     # Formulate the mixed integer program.
-    solver = pywraplp.Solver.CreateSolver("SCIP")
+    solver = pywraplp.Solver.CreateSolver("GLOP")
 
     # These variables indicate the first five guesses.
     guess_variables = {guess: solver.BoolVar(guess) for guess in allowed_guesses}
-    solver.Add(sum(guess_variables.values()) <= 5)
+    solver.Minimize(sum(guess_variables.values()))
 
     guesses_of_test = collections.defaultdict(int)
     for guess, x in guess_variables.items():
@@ -69,9 +68,7 @@ def main():
     solver.EnableOutput()
     status = solver.Solve()
     if status in (pywraplp.Solver.OPTIMAL, pywraplp.Solver.FEASIBLE):
-        for guess, x in guess_variables.items():
-            if round(x.SolutionValue()):
-                print(guess)
+        print(solver.Objective().Value())
 
 
 if __name__ == "__main__":
