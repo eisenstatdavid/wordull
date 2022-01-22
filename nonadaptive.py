@@ -35,6 +35,8 @@ def main():
         allowed_guesses.sort()
     with open("wordle-answers-alphabetical.txt") as f:
         answers_alphabetical = f.read().split()
+        if False:
+            answers_alphabetical = random.sample(answers_alphabetical, 300)
         answers_alphabetical.sort()
 
     # Formulate the mixed integer program.
@@ -69,6 +71,11 @@ def main():
     status = solver.Solve()
     if status in (pywraplp.Solver.OPTIMAL, pywraplp.Solver.FEASIBLE):
         print(solver.Objective().Value())
+        for guess, x in sorted(
+            guess_variables.items(), key=lambda item: item[1].SolutionValue()
+        ):
+            if x.SolutionValue():
+                print(guess, x.SolutionValue())
 
 
 if __name__ == "__main__":
