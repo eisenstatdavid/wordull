@@ -4,6 +4,7 @@
 import collections
 import itertools
 import random
+import sys
 
 # pip install ortools
 from ortools.linear_solver import pywraplp
@@ -56,7 +57,7 @@ def main():
     for ans1, ans2 in itertools.combinations(answers_alphabetical, 2):
         if ans1 != previous:
             previous = ans1
-            print(ans1)
+            print(ans1, file=sys.stderr)
         coverage = 0
         for test in distinguishing_tests(ans1, ans2):
             x = test_variables.get(test)
